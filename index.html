@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        #videoParent {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        video {
+            height: 100%;
+            width: 100%;
+        }
+
+        #record,
+        #capture {
+            height: 5rem;
+            width: 5rem;
+            position: fixed;
+            border-radius: 100%;
+            right: 1rem;
+            background-color: #404040;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: none;
+        }
+
+        #record {
+            bottom: 20rem;
+        }
+
+        #capture {
+            bottom: 13rem;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="videoParent">
+        <video autoplay="true"></video>
+    </div>
+    <button id="record"></button>
+    <button id="capture"></i></button>
+    <script>
+
+        let recordingState = false;
+        let videoEle = document.querySelector("video");
+        let chunks = [];
+        let recordBtn = document.querySelector("#record");
+        let mediaRecorder;
+        let img = document.querySelector("#capture");
+        //navigator is a object in browser with many functions.
+        //mediaDevices is one of them
+        //getUserMedia is defined in mediaDevces
+        //it takes arguements like below and you cannot change their names;
+        //mediaStream is a object that we get as data which is returned if the promise of getUserMedia is resolved
+        //vedio.scrObj takes that object to play back our video;
+        //browser js cannot communicate with OS features(mic ,camera etc)so browser is the medium of communication between them.
+        //search about cache.delete();
+        //if multiple cameras or mics then userMedia return a array; 
+
+        img.addEventListener("click", function (e) {
+            let canvas = document.createElement("canvas");
+            canvas.width = videoEle.videoWidth
+            canvas.height = videoEle.videoHeight
+            let tool = canvas.getContext("2d");
+            tool.drawImage(videoEle, 0, 0);
+            let url = canvas.toDataURL();
+            let a = document.createElement("a");
+            a.href = url;
+            a.download = "img.jpg";
+            a.click();
+            a.remove();
+        })
+
+        recordBtn.addEventListener("click", function (e) {
+            innerbtn=document.querySelector(".recordbtn");
+            innerbtn.classList.toggle("fas fa-video-slash");
+            innrtbtn.classList.toggle("fas fa-video");
+
+            if (!recordingState) {
+                recordingState = true;
+                mediaRecorder.start();
+            }
+            else {
+                recordingState = false;
+                mediaRecorder.stop();
+            }
+        })
+
+        navigator
+            .mediaDevices
+            .getUserMedia({ video: true, audio: true })
+            .then(function (mediaStream) {
+
+                mediaRecorder = new MediaRecorder(mediaStream);
+                videoEle.srcObject = mediaStream;
+
+                mediaRecorder.addEventListener("dataavailable", function (e) {
+                    chunks.push(e.data);
+                })
+
+                mediaRecorder.addEventListener("stop", function (e) {
+                    let blob = new Blob(chunks, { type: "video/mp4" });
+                    chunks = [];
+                    let url = window.URL.createObjectURL(blob);
+                    let a = document.createElement("a");
+                    a.href = url;
+                    a.download = "video.mp4";
+                    a.click();
+                    a.remove();
+                })
+            })
+    </script>
+</body>
+
+</html>
