@@ -62,6 +62,9 @@ img.addEventListener("click", function (e) {
     canvas.width = videoEle.videoWidth
     canvas.height = videoEle.videoHeight
     let tool = canvas.getContext("2d");
+    tool.translate(canvas.width / 2, canvas.height / 2);
+    tool.scale(currZoom, currZoom);
+    tool.translate(-canvas.width / 2, -canvas.height / 2);
     tool.drawImage(videoEle, 0, 0);
     if (appliedFilter) {
         tool.fillStyle = appliedFilter;
