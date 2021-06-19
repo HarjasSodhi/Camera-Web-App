@@ -6,173 +6,36 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #282c34;
-        }
-
-        video {
-            height: 100%;
-            width: 100%;
-        }
-
-        #record,
-        #capture {
-            border: 3px solid white;
-            height: 4rem;
-            width: 4rem;
-            position: fixed;
-            border-radius: 100%;
-            right: 0.7rem;
-            background-color: #404040;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #record {
-            bottom: 20rem;
-        }
-
-        #record div{
-            height: 2.5rem;
-            width: 2.5rem;
-            border-radius: 100%;
-            background-color: red;
-        }
-
-        #capture div{
-            height: 2.5rem;
-            width: 2.5rem;
-            border-radius: 100%;
-            background-color: white;
-        }
-
-        #capture {
-            bottom: 14rem;
-        }
-
-        .recordAnimation{
-            animation: in-out 0.5s infinite;
-        }
-
-        @keyframes in-out {
-            0%{
-                transform: scale(1);
-            }
-            50%{
-                transform: scale(1.1);
-            }
-            100%{
-                transform: scale(1);
-            }
-        }
-
-        .imgCaptureAnimation{
-            animation: click 1s;
-        }
-
-        @keyframes click {
-            0%{
-                transform: scale(1);
-            }
-            50%{
-                transform: scale(1.2);
-            }
-            100%{
-                transform: scale(1);
-            }
-        }
-
-
-    </style>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css"
+        integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <video autoplay="true"></video>
-    <button id="record"><div></div></button>
-    <button id="capture"><div></div></button>
+    <div id="videoContainer">
+        <video autoplay="true"></video>
+    </div>
+    <div class="filter-container">
+        <div class="filter" style="background-color: #e5503942; background-blend-mode: color-burn;"></div>
+        <div class="filter" style="background-color: #1e379944; background-blend-mode: color-burn;"></div>
+        <div class="filter" style="background-color: #f6b83b23; background-blend-mode: color-burn;"></div>
+        <div class="filter" style="background-color: #07999227; background-blend-mode: color-burn;"></div>
+        <div class="filter" style="background-color: #b7e9943d; background-blend-mode: color-burn;"></div>
+        <div class="filter"></div>
+    </div>
+    <button id="record">
+        <div></div>
+    </button>
+    <button id="capture">
+        <div></div>
+    </button>
+
+    <div class="zoom-container">
+        <div class="zoom-in"><i class="fas fa-plus"></i></div>
+        <div class="zoom-out"><i class="fas fa-minus"></i></div>
+    </div>
+
 </body>
-    <script>
-
-        let recordingState = false;
-        let videoEle = document.querySelector("video");
-        let chunks = [];
-        let recordBtn = document.querySelector("#record");
-        let mediaRecorder;
-        let img = document.querySelector("#capture");
-        //navigator is a object in browser with many functions.
-        //mediaDevices is one of them
-        //getUserMedia is defined in mediaDevces
-        //it takes arguements like below and you cannot change their names;
-        //mediaStream is a object that we get as data which is returned if the promise of getUserMedia is resolved
-        //vedio.scrObj takes that object to play back our video;
-        //browser js cannot communicate with OS features(mic ,camera etc)so browser is the medium of communication between them.
-        //search about cache.delete();
-        //if multiple cameras or mics then userMedia return a array; 
-
-        img.addEventListener("click", function (e) {
-            let innerDiv=img.querySelector("div");
-            innerDiv.classList.add("imgCaptureAnimation");
-            setTimeout(() => {
-                innerDiv.classList.remove("imgCaptureAnimation");
-            }, 1200);
-            let canvas = document.createElement("canvas");
-            canvas.width = videoEle.videoWidth
-            canvas.height = videoEle.videoHeight
-            let tool = canvas.getContext("2d");
-            tool.drawImage(videoEle, 0, 0);
-            let url = canvas.toDataURL();
-            let a = document.createElement("a");
-            a.href = url;
-            a.download = "img.jpg";
-            a.click();
-            a.remove();
-        })
-
-        recordBtn.addEventListener("click", function (e) {
-            let innerDiv=recordBtn.querySelector("div");
-            if (!recordingState) {
-                innerDiv.classList.add("recordAnimation");
-                recordingState = true;
-                mediaRecorder.start();
-            }
-            else {
-                innerDiv.classList.remove("recordAnimation");
-                recordingState = false;
-                mediaRecorder.stop();
-            }
-        })
-
-        navigator
-            .mediaDevices
-            .getUserMedia({ video: true, audio: true })
-            .then(function (mediaStream) {
-
-                mediaRecorder = new MediaRecorder(mediaStream);
-                videoEle.srcObject = mediaStream;
-
-                mediaRecorder.addEventListener("dataavailable", function (e) {
-                    chunks.push(e.data);
-                })
-
-                mediaRecorder.addEventListener("stop", function (e) {
-                    let blob = new Blob(chunks, { type: "video/mp4" });
-                    chunks = [];
-                    let url = window.URL.createObjectURL(blob);
-                    let a = document.createElement("a");
-                    a.href = url;
-                    a.download = "video.mp4";
-                    a.click();
-                    a.remove();
-                })
-            })
-    </script>
+<script src="script.js"></script>
 
 </html>
