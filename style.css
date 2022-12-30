@@ -166,4 +166,5 @@ video {
   border: 4px solid white;
   border-radius: 100%;
   color: white;
+  z-index: 10;
 }

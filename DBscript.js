@@ -2,6 +2,7 @@ let gallery = indexedDB.open("Camera", 1);
 let db;
 gallery.addEventListener("success", function (e) {
     db = gallery.result;
+    viewMedia();
 });
 gallery.addEventListener("upgradeneeded", function (e) {
     let accessToDB = gallery.result;
@@ -26,7 +27,7 @@ function addMedia(media, type) {
 let bodyele = document.querySelector("body");
 
 function viewMedia() {
-    if (!db) return;
+    if (!db) return false;
     let tx = db.transaction("gallery", "readonly");
     let accessToGallery = tx.objectStore("gallery");
     let AccessToCursor = accessToGallery.openCursor();
@@ -49,7 +50,9 @@ function viewMedia() {
             if (cursor.value.type == "video") {
                 let ve = document.createElement("video");
                 ve.controls = "true";
+                console.log(cursor.value.media);
                 let url = window.URL.createObjectURL(cursor.value.media);
+                console.log(url);
                 ve.src = url;
                 ve.autoplay = "true";
                 ve.muted = "true";
@@ -58,6 +61,7 @@ function viewMedia() {
                 downloadBtn.addEventListener("click", function (e) {
                     let a = document.createElement("a");
                     a.href = url;
+                    console.log(a.href);
                     a.download = "video.mp4";
                     a.click();
                     a.remove();
@@ -69,7 +73,8 @@ function viewMedia() {
                 img.src = cursor.value.media;
                 mo.append(img);
                 downloadBtn.addEventListener("click", function (e) {
-                    let url = cursor.value.media;
+                    let url = img.src;
+                    console.log(url);
                     let a = document.createElement("a");
                     a.href = url;
                     a.download = "img.jpg";
@@ -86,6 +91,7 @@ function viewMedia() {
             cursor.continue();
         }
     })
+    return true;
 }
 
 function removeMedia(id) {

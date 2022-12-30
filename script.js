@@ -77,6 +77,7 @@ img.addEventListener("click", function (e) {
     let url = canvas.toDataURL();
 
     addMedia(url, "image");
+    alert("saved in galary");
 
     
 });
@@ -113,6 +114,6 @@ navigator.mediaDevices
             chunks = [];
 
             addMedia(blob, "video");
-
+            alert("saved in galary");
         });
     });
